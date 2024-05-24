@@ -83,7 +83,6 @@ namespace PruebaMVC.Controllers
         public IActionResult Create()
         {
             ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre");
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero");
             return View();
         }
 
@@ -101,7 +100,6 @@ namespace PruebaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", albume.GruposId);
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Nombre", albume.Genero);
             return View(albume);
         }
 
@@ -119,7 +117,6 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", albume.GruposId);
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", albume.Genero);
             return View(albume);
         }
 
@@ -156,7 +153,6 @@ namespace PruebaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Id", albume.GruposId);
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", albume.Genero);
             return View(albume);
         }
 
