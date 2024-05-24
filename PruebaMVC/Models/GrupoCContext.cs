@@ -105,6 +105,10 @@ public partial class GrupoCContext : DbContext
             entity.Property(e => e.Lugar)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Precio).HasColumnType("money");
+            entity.Property(e => e.Titulo)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<ConciertosGrupo>(entity =>

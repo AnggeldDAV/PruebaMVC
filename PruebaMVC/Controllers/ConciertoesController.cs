@@ -22,8 +22,10 @@ namespace PruebaMVC.Controllers
         // GET: Conciertoes
         public async Task<IActionResult> Index(string sortOrder,string searchString)
         {
-            ViewData["GeneroSortParm"] = String.IsNullOrEmpty(sortOrder) ? "genero_desc" : "";
+            ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "titulo_desc" : "";
+            ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
             ViewData["LugarSortParm"] = sortOrder == "Lugar" ? "lugar_desc" : "Lugar";
+            ViewData["PrecioSortParm"] = sortOrder == "Precio" ? "precio_desc" : "Precio";
             if (_context.Albumes == null)
             {
                 return Problem("Es nulo");
@@ -33,12 +35,12 @@ namespace PruebaMVC.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                conciertos = conciertos.Where(s => s.Lugar!.Contains(searchString));
+                conciertos = conciertos.Where(s => s.Titulo!.Contains(searchString));
             }
             switch (sortOrder)
             {
-                case "genero_desc":
-                    conciertos = conciertos.OrderByDescending(s => s.Genero);
+                case "titulo_desc":
+                    conciertos = conciertos.OrderByDescending(s => s.Titulo);
                     break;
                 case "Lugar":
                     conciertos = conciertos.OrderBy(s => s.Lugar);
@@ -46,8 +48,20 @@ namespace PruebaMVC.Controllers
                 case "lugar_desc":
                     conciertos = conciertos.OrderByDescending(s => s.Lugar);
                     break;
-                default:
+                case "Genero":
                     conciertos = conciertos.OrderBy(s => s.Genero);
+                    break;
+                case "genero_desc":
+                    conciertos = conciertos.OrderByDescending(s => s.Genero);
+                    break;
+                case "Precio":
+                    conciertos = conciertos.OrderBy(s => s.Precio);
+                    break;
+                case "precio_desc":
+                    conciertos = conciertos.OrderByDescending(s => s.Precio);
+                    break;
+                default:
+                    conciertos = conciertos.OrderBy(s => s.Titulo);
                     break;
             }
             return View(await conciertos.AsNoTracking().ToListAsync());

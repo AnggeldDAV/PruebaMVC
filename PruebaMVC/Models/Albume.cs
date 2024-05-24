@@ -9,13 +9,9 @@ public partial class Albume
     public int Id { get; set; }
     [DataType(DataType.Date)]
     public DateOnly? Fecha { get; set; }
-    
     public string? Genero { get; set; }
-    
     public string? Titulo { get; set; }
 
-    [Display(Name ="Grupos")]
-    
     public int? GruposId { get; set; }
 
     public virtual ICollection<Cancione> Canciones { get; set; } = new List<Cancione>();
