@@ -88,7 +88,6 @@ namespace PruebaMVC.Controllers
         // GET: Conciertoes/Create
         public IActionResult Create()
         {
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero");
             return View();
         }
 
@@ -105,7 +104,6 @@ namespace PruebaMVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", concierto.Genero);
             return View(concierto);
         }
 
@@ -122,7 +120,6 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", concierto.Genero);
             return View(concierto);
         }
 
@@ -158,7 +155,6 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", concierto.Genero);
             return View(concierto);
         }
 
