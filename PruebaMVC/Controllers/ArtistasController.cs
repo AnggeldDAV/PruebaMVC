@@ -53,6 +53,12 @@ namespace PruebaMVC.Controllers
             return View(await artistas.AsNoTracking().ToListAsync());
         }
 
+        public async Task<IActionResult> IndexConsulta()
+        {
+            var consulta = _context.Artistas.Where(x => x.FechaNac.Value.Year >1950);
+            return View(await consulta.AsNoTracking().ToListAsync());
+        }
+
         // GET: Artistas/Details/5
         public async Task<IActionResult> Details(int? id)
         {

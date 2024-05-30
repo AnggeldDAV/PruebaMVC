@@ -60,6 +60,12 @@ namespace PruebaMVC.Controllers
             return View(await albums.AsNoTracking().ToListAsync());
         }
 
+        public async Task<IActionResult> IndexConsulta()
+        {
+            var consulta = _context.Albumes.Where(x=>x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
+            return View(await consulta.AsNoTracking().ToListAsync());
+        }
+
         // GET: Albumes/Details/5
         public async Task<IActionResult> Details(int? id)
         {

@@ -67,6 +67,12 @@ namespace PruebaMVC.Controllers
             return View(await conciertos.AsNoTracking().ToListAsync());
         }
 
+        public async Task<IActionResult> IndexConsulta()
+        {
+            var consulta = _context.Conciertos.Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
+            return View(await consulta.AsNoTracking().ToListAsync());
+        }
+
         // GET: Conciertoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
