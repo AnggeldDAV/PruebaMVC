@@ -1,22 +1,225 @@
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
     font-size: 16px;
-  }
+    background-color: rgba(60, 151, 201, 0.8);
+}
+.colorFondo {
+    background-color: rgba(60, 151, 201, 0.8);
+}
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
+/*Navbar*/
+#mainNav {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+}
+
+    #mainNav .navbar-brand {
+        font-family: "Merriweather Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-weight: 700;
+        color: #212529;
+    }
+
+    #mainNav .navbar-nav .nav-item .nav-link {
+        color: #6c757d;
+        font-family: "Merriweather Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 0.75rem 0;
+    }
+
+        #mainNav .navbar-nav .nav-item .nav-link:hover, #mainNav .navbar-nav .nav-item .nav-link:active {
+            color: #60BDFF;
+        }
+
+        #mainNav .navbar-nav .nav-item .nav-link.active {
+            color: #60BDFF !important;
+        }
+
+@media (min-width: 992px) {
+    #mainNav {
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+        #mainNav .navbar-brand {
+            color: rgba(60, 151, 201, 0.8);
+        }
+
+            #mainNav .navbar-brand:hover {
+                color: black;
+            }
+
+        #mainNav .navbar-nav .nav-item .nav-link {
+            color: rgba(60, 151, 201, 0.8);
+            padding: 0 1rem;
+        }
+
+            #mainNav .navbar-nav .nav-item .nav-link:hover {
+                color: black;
+            }
+
+        #mainNav .navbar-nav .nav-item:last-child .nav-link {
+            padding-right: 0;
+        }
+
+        #mainNav.navbar-shrink {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            background-color: #fff;
+        }
+
+            #mainNav.navbar-shrink .navbar-brand {
+                color: #212529;
+            }
+
+                #mainNav.navbar-shrink .navbar-brand:hover {
+                    color: #60BDFF;
+                }
+
+            #mainNav.navbar-shrink .navbar-nav .nav-item .nav-link {
+                color: #212529;
+            }
+
+                #mainNav.navbar-shrink .navbar-nav .nav-item .nav-link:hover {
+                    color: #60BDFF;
+                }
+}
+
+
+
+header.encabezado {
+    padding-top: 10rem;
+    padding-bottom: calc(10rem - 4.5rem);
+    background: linear-gradient(to bottom, rgba(60, 151, 201, 0.8) 0%, rgba(60, 151, 201, 0.8) 100%);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+}
+
+    header.encabezado h1, header.encabezado .h1 {
+        font-size: 2.25rem;
+    }
+
+@media (min-width: 992px) {
+    header.encabezado {
+        height: 100vh;
+        min-height: 40rem;
+        padding-top: 4.5rem;
+        padding-bottom: 0;
+    }
+
+        header.encabezado p {
+            font-size: 1.15rem;
+        }
+
+        header.encabezado h1, header.encabezado .h1 {
+            font-size: 3rem;
+        }
+}
+
+@media (min-width: 1200px) {
+    header.encabezado h1, header.encabezado .h1 {
+        font-size: 3.5rem;
+    }
+}
+
+hr.divider {
+    height: 0.2rem;
+    max-width: 3.25rem;
+    margin: 1.5rem auto;
+    background-color: #60BDFF;
+    opacity: 1;
+}
+
+hr.divider-light {
+    background-color: #fff;
+}
+
+.bg-seccion-uno {
+    --bs-bg-opacity: 1;
+    background-color: #60BDFF;
+}
+
+.page-section {
+    padding: 8rem 0;
+}
+
+
+/*Imagenes*/
+#grupos .container-fluid, #grupos .container-sm, #grupos .container-md, #grupos .container-lg, #grupos .container-xl, #grupos .container-xxl {
+    max-width: 1920px;
+}
+
+    #grupos .container-fluid .grupos-box, #grupos .container-sm .grupos-box, #grupos .container-md .grupos-box, #grupos .container-lg .grupos-box, #grupos .container-xl .grupos-box, #grupos .container-xxl .grupos-box {
+        position: relative;
+        display: block;
+    }
+
+        #grupos .container-fluid .grupos-box .grupos-box-caption, #grupos .container-sm .grupos-box .grupos-box-caption, #grupos .container-md .grupos-box .grupos-box-caption, #grupos .container-lg .grupos-box .grupos-box-caption, #grupos .container-xl .grupos-box .grupos-box-caption, #grupos .container-xxl .grupos-box .grupos-box-caption {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            opacity: 0;
+            color: #fff;
+            background: rgba(30, 116, 145, 0.9);
+            transition: opacity 0.25s ease;
+            text-align: center;
+        }
+
+            #grupos .container-fluid .grupos-box .grupos-box-caption .project-category, #grupos .container-sm .grupos-box .grupos-box-caption .project-category, #grupos .container-md .grupos-box .grupos-box-caption .project-category, #grupos .container-lg .grupos-box .grupos-box-caption .project-category, #grupos .container-xl .grupos-box .grupos-box-caption .project-category, #grupos .container-xxl .grupos-box .grupos-box-caption .project-category {
+                font-family: "Merriweather Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            #grupos .container-fluid .grupos-box .grupos-box-caption .project-name, #grupos .container-sm .grupos-box .grupos-box-caption .project-name, #grupos .container-md .grupos-box .grupos-box-caption .project-name, #grupos .container-lg .grupos-box .grupos-box-caption .project-name, #grupos .container-xl .grupos-box .grupos-box-caption .project-name, #grupos .container-xxl .grupos-box .grupos-box-caption .project-name {
+                font-size: 1.2rem;
+            }
+
+        #grupos .container-fluid .grupos-box:hover .grupos-box-caption, #grupos .container-sm .grupos-box:hover .grupos-box-caption, #grupos .container-md .grupos-box:hover .grupos-box-caption, #grupos .container-lg .grupos-box:hover .grupos-box-caption, #grupos .container-xl .grupos-box:hover .grupos-box-caption, #grupos .container-xxl .grupos-box:hover .grupos-box-caption {
+            opacity: 1;
+        }
+
+/*Color iconos*/
+.text-primary {
+    --bs-text-opacity: 1;
+    color: #60BDFF !important;
+}
+
+/*Links*/
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: #60BDFF;
+}
+.gordete {
+    font-weight: 600;
+    color:white;
+}
+    a:hover {
+        color: #1E7491;
+    }
+
