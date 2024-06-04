@@ -15,7 +15,7 @@
 <body id="page-top">
     <!--Nav-->
     <nav class="navbar navbar-expand-lg navbar-light py-3" id="mainNav">
-        <div class="container-fluid">
+        <div class="container">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Pagina de Musica</a>
             <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -36,20 +36,34 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="CancionesConciertoes" asp-action="Index">CancionesConciertos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Conciertoes" asp-action="Index">Conciertos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Conciertoes" asp-action="IndexConsulta">ConciertosConsulta</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Conciertos
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Conciertoes" asp-action="Index">Conciertos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Conciertoes" asp-action="IndexConsulta">ConciertosConsulta</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="ConciertosGrupoes" asp-action="Index">ConciertosGrupos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Albumes" asp-action="Index">Albumes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Albumes" asp-action="IndexConsulta">AlbumesConsulta</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Albumes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Albumes" asp-action="Index">Index</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Albumes" asp-action="IndexConsulta">AlbumesConsulta</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Grupoes" asp-action="Index">Grupos</a>
@@ -57,11 +71,18 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="GruposArtistas" asp-action="Index">GruposArtista</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Artistas" asp-action="Index">Artistas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Artistas" asp-action="IndexConsulta">ArtistasConsulta</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Artistas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Artistas" asp-action="Index">Index</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Artistas" asp-action="IndexConsulta">ArtistasConsulta</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
