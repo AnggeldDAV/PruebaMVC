@@ -29,9 +29,8 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-            var albums = from m in _context.Albumes
-                         select m;
 
+            var albums = _context.Albumes.Include(c=>c.Grupos).Select(x=>x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 albums = albums.Where(s => s.Titulo!.Contains(searchString));
@@ -48,10 +47,10 @@ namespace PruebaMVC.Controllers
                     albums = albums.OrderByDescending(s => s.Genero);
                     break;
                     case "Grupos":
-                    albums = albums.OrderBy(s => s.GruposId);
+                    albums = albums.OrderBy(s => s.Grupos.Nombre);
                     break;                    
                     case "grupos_desc":
-                    albums = albums.OrderByDescending(s => s.GruposId);
+                    albums = albums.OrderByDescending(s => s.Grupos.Nombre);
                     break;
                     default:
                     albums = albums.OrderBy(s => s.Titulo);
@@ -62,7 +61,7 @@ namespace PruebaMVC.Controllers
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.Albumes.Where(x=>x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
+            var consulta = _context.Albumes.Include(c => c.Grupos).Select(x => x).Where(x=>x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
             return View(await consulta.AsNoTracking().ToListAsync());
         }
 
