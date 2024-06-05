@@ -47,7 +47,8 @@ namespace PruebaMVC.Services.Repositorio
 
         public void Modificar(int Id, Concierto concierto)
         {
-            if (DameUno(Id) != null)
+            var respuesta = DameUno(Id);
+            if (respuesta != null)
             {
                 Borrar(Id);
                 _context.SaveChanges();
