@@ -97,7 +97,6 @@ public partial class GrupoCContext : DbContext
 
         modelBuilder.Entity<Concierto>(entity =>
         {
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Fecha).HasColumnType("datetime");
             entity.Property(e => e.Genero)
                 .HasMaxLength(50)

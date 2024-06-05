@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class ConciertoesController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IConciertosRepositorio _repositorio;
 
-        public ConciertoesController(GrupoCContext context)
+        public ConciertoesController(IConciertosRepositorio repositorio)
         {
-            _context = context;
+            _repositorio = repositorio;
         }
 
         // GET: Conciertoes
@@ -26,12 +27,12 @@ namespace PruebaMVC.Controllers
             ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
             ViewData["LugarSortParm"] = sortOrder == "Lugar" ? "lugar_desc" : "Lugar";
             ViewData["PrecioSortParm"] = sortOrder == "Precio" ? "precio_desc" : "Precio";
-            if (_context.Albumes == null)
+            if (_repositorio.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
-            var conciertos = from m in _context.Conciertos
-                           select m;
+
+            var conciertos = _repositorio.DameTodos().Select(x=>x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -64,25 +65,26 @@ namespace PruebaMVC.Controllers
                     conciertos = conciertos.OrderBy(s => s.Titulo);
                     break;
             }
-            return View(await conciertos.AsNoTracking().ToListAsync());
+            return View(conciertos);
         }
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.Conciertos.Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
-            return View(await consulta.AsNoTracking().ToListAsync());
+            var consulta = _repositorio.DameTodos().Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
+            return View(consulta);
         }
 
         // GET: Conciertoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (_repositorio.DameUno((int)id) == null)
             {
                 return NotFound();
             }
 
-            var concierto = await _context.Conciertos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var context = _repositorio.DameTodos().Select(x=>x);
+            var concierto = context
+                .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
             {
                 return NotFound();
@@ -102,12 +104,11 @@ namespace PruebaMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Fecha,Genero,Lugar")] Concierto concierto)
+        public async Task<IActionResult> Create([Bind("Titulo,Id,Fecha,Genero,Lugar,Precio")] Concierto concierto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(concierto);
-                await _context.SaveChangesAsync();
+                _repositorio.Agregar(concierto);
                 return RedirectToAction(nameof(Index));
             }
             return View(concierto);
@@ -121,7 +122,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var concierto = await _context.Conciertos.FindAsync(id);
+            var concierto = _repositorio.DameUno((int)id);
             if (concierto == null)
             {
                 return NotFound();
@@ -134,7 +135,7 @@ namespace PruebaMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Fecha,Genero,Lugar")] Concierto concierto)
+        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Id,Fecha,Genero,Lugar,Precio")] Concierto concierto)
         {
             if (id != concierto.Id)
             {
@@ -145,8 +146,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(concierto);
-                    await _context.SaveChangesAsync();
+                    _repositorio.Modificar(id,concierto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -172,8 +172,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var concierto = await _context.Conciertos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var context = _repositorio.DameTodos().Select(x => x);
+            var concierto = context
+                .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
             {
                 return NotFound();
@@ -187,19 +188,17 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var concierto = await _context.Conciertos.FindAsync(id);
+            var concierto = _repositorio.DameUno((int)id);
             if (concierto != null)
             {
-                _context.Conciertos.Remove(concierto);
+                _repositorio.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ConciertoExists(int id)
         {
-            return _context.Conciertos.Any(e => e.Id == id);
+            return _repositorio.DameTodos().Any(e => e.Id == id);
         }
     }
 }
