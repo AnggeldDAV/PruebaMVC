@@ -14,12 +14,12 @@ namespace PruebaMVC.Controllers
     public class AlbumesController : Controller
     {
         private readonly IGenericRepositorio<Albume> _context;
-        private readonly IGenericRepositorio<Grupo> _Grupocontext;
+        private readonly IGenericRepositorio<VistaAlbume> _contextVista;
 
-        public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<Grupo> grupocontext)
+        public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<VistaAlbume> contextVista)
         {
             _context = context;
-            _Grupocontext = grupocontext;
+            _contextVista = contextVista;
         }
 
         // GET: Albumes
@@ -33,32 +33,31 @@ namespace PruebaMVC.Controllers
                 return Problem("Es nulo");
             }
 
-            var albums = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
-                grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x=>x);
+            var albums = _context.DameTodos().Select(x=>x);
              
             if (!String.IsNullOrEmpty(searchString))
             {
-                albums = albums.Where(s => s.Album.Titulo!.Contains(searchString));
+                albums = albums.Where(s => s.Titulo!.Contains(searchString));
             }
             switch (sortOrder)
             {
                 case "name_desc":
-                    albums = albums.OrderByDescending(s => s.Album.Titulo);
+                    albums = albums.OrderByDescending(s => s.Titulo);
                     break;
                 case "Genero":
-                    albums = albums.OrderBy(s => s.Album.Genero);
+                    albums = albums.OrderBy(s => s.Genero);
                     break;
                 case "genero_desc":
-                    albums = albums.OrderByDescending(s => s.Album.Genero);
+                    albums = albums.OrderByDescending(s => s.Genero);
                     break;
                     case "Grupos":
-                    albums = albums.OrderBy(s => s.Grupo.Nombre);
+                    albums = albums.OrderBy(s => s.Grupos.Nombre);
                     break;                    
                     case "grupos_desc":
-                    albums = albums.OrderByDescending(s => s.Grupo.Nombre);
+                    albums = albums.OrderByDescending(s => s.Grupos.Nombre);
                     break;
                     default:
-                    albums = albums.OrderBy(s => s.Album.Titulo);
+                    albums = albums.OrderBy(s => s.Titulo);
                     break;
             }
             return View(albums);
@@ -66,8 +65,7 @@ namespace PruebaMVC.Controllers
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
-                grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x).Select(x => x).Where(x=>x.Album.Genero == "Heavy Metal" && x.Album.Titulo.Contains("u"));
+            var consulta = _contextVista.DameTodos().Select(x => x).Where(x=>x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
             return View((IEnumerable<Albume>)consulta);
         }
 
@@ -79,9 +77,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
-                    grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x)
-                .FirstOrDefault(x => x.Album.Id == id);
+            var albume = _context.DameTodos().FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
                 return NotFound();
@@ -93,7 +89,7 @@ namespace PruebaMVC.Controllers
         // GET: Albumes/Create
         public IActionResult Create()
         {
-            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre");
+            ViewData["GruposId"] = new SelectList(_contextVista.DameTodos(), "Id", "Nombre");
             return View();
         }
 
@@ -109,7 +105,7 @@ namespace PruebaMVC.Controllers
                 _context.Agregar(albume);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_contextVista.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
@@ -126,7 +122,7 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_contextVista.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
@@ -161,7 +157,7 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Id", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_contextVista.DameTodos(), "Id", "Id", albume.GruposId);
             return View(albume);
         }
 
@@ -173,9 +169,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
-                    grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x)
-                .FirstOrDefault(x => x.Album.Id == id);
+            var albume = _context.DameTodos().FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
                 return NotFound();
