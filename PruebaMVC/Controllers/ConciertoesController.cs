@@ -13,11 +13,11 @@ namespace PruebaMVC.Controllers
 {
     public class ConciertoesController : Controller
     {
-        private readonly IConciertosRepositorio _repositorio;
+        private readonly IGenericRepositorio<Concierto> _context;
 
-        public ConciertoesController(IConciertosRepositorio repositorio)
+        public ConciertoesController(IGenericRepositorio<Concierto> context)
         {
-            _repositorio = repositorio;
+            _context = context;
         }
 
         // GET: Conciertoes
@@ -27,12 +27,12 @@ namespace PruebaMVC.Controllers
             ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
             ViewData["LugarSortParm"] = sortOrder == "Lugar" ? "lugar_desc" : "Lugar";
             ViewData["PrecioSortParm"] = sortOrder == "Precio" ? "precio_desc" : "Precio";
-            if (_repositorio.DameTodos() == null)
+            if (_context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
 
-            var conciertos = _repositorio.DameTodos().Select(x=>x);
+            var conciertos = _context.DameTodos().Select(x=>x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -70,19 +70,19 @@ namespace PruebaMVC.Controllers
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _repositorio.DameTodos().Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
+            var consulta = _context.DameTodos().Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
             return View(consulta);
         }
 
         // GET: Conciertoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (_repositorio.DameUno((int)id) == null)
+            if (_context.DameUno((int)id) == null)
             {
                 return NotFound();
             }
 
-            var context = _repositorio.DameTodos().Select(x=>x);
+            var context = _context.DameTodos().Select(x=>x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -108,7 +108,7 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _repositorio.Agregar(concierto);
+                _context.Agregar(concierto);
                 return RedirectToAction(nameof(Index));
             }
             return View(concierto);
@@ -122,7 +122,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var concierto = _repositorio.DameUno((int)id);
+            var concierto = _context.DameUno((int)id);
             if (concierto == null)
             {
                 return NotFound();
@@ -146,7 +146,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _repositorio.Modificar(id,concierto);
+                    _context.Modificar(id,concierto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -172,7 +172,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var context = _repositorio.DameTodos().Select(x => x);
+            var context = _context.DameTodos().Select(x => x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -188,17 +188,17 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var concierto = _repositorio.DameUno((int)id);
+            var concierto = _context.DameUno((int)id);
             if (concierto != null)
             {
-                _repositorio.Borrar(id);
+                _context.Borrar(id);
             }
             return RedirectToAction(nameof(Index));
         }
 
         private bool ConciertoExists(int id)
         {
-            return _repositorio.DameTodos().Any(e => e.Id == id);
+            return _context.DameTodos().Any(e => e.Id == id);
         }
     }
 }

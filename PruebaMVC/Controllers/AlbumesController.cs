@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class AlbumesController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IGenericRepositorio<Albume> _context;
+        private readonly IGenericRepositorio<Grupo> _Grupocontext;
 
-        public AlbumesController(GrupoCContext context)
+        public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<Grupo> grupocontext)
         {
             _context = context;
+            _Grupocontext = grupocontext;
         }
 
         // GET: Albumes
@@ -25,44 +28,47 @@ namespace PruebaMVC.Controllers
             ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
             ViewData["IDSortParm"] = sortOrder == "Grupos" ? "grupos_desc" : "Grupos";
-            if (_context.Albumes == null)
+            if (_context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
 
-            var albums = _context.Albumes.Include(c=>c.Grupos).Select(x=>x);
+            var albums = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
+                grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x=>x);
+             
             if (!String.IsNullOrEmpty(searchString))
             {
-                albums = albums.Where(s => s.Titulo!.Contains(searchString));
+                albums = albums.Where(s => s.Album.Titulo!.Contains(searchString));
             }
             switch (sortOrder)
             {
                 case "name_desc":
-                    albums = albums.OrderByDescending(s => s.Titulo);
+                    albums = albums.OrderByDescending(s => s.Album.Titulo);
                     break;
                 case "Genero":
-                    albums = albums.OrderBy(s => s.Genero);
+                    albums = albums.OrderBy(s => s.Album.Genero);
                     break;
                 case "genero_desc":
-                    albums = albums.OrderByDescending(s => s.Genero);
+                    albums = albums.OrderByDescending(s => s.Album.Genero);
                     break;
                     case "Grupos":
-                    albums = albums.OrderBy(s => s.Grupos.Nombre);
+                    albums = albums.OrderBy(s => s.Grupo.Nombre);
                     break;                    
                     case "grupos_desc":
-                    albums = albums.OrderByDescending(s => s.Grupos.Nombre);
+                    albums = albums.OrderByDescending(s => s.Grupo.Nombre);
                     break;
                     default:
-                    albums = albums.OrderBy(s => s.Titulo);
+                    albums = albums.OrderBy(s => s.Album.Titulo);
                     break;
             }
-            return View(await albums.AsNoTracking().ToListAsync());
+            return View(albums);
         }
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.Albumes.Include(c => c.Grupos).Select(x => x).Where(x=>x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
-            return View(await consulta.AsNoTracking().ToListAsync());
+            var consulta = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
+                grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x).Select(x => x).Where(x=>x.Album.Genero == "Heavy Metal" && x.Album.Titulo.Contains("u"));
+            return View((IEnumerable<Albume>)consulta);
         }
 
         // GET: Albumes/Details/5
@@ -73,9 +79,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = await _context.Albumes
-                .Include(a => a.Grupos)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var albume = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
+                    grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x)
+                .FirstOrDefault(x => x.Album.Id == id);
             if (albume == null)
             {
                 return NotFound();
@@ -87,7 +93,7 @@ namespace PruebaMVC.Controllers
         // GET: Albumes/Create
         public IActionResult Create()
         {
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre");
+            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre");
             return View();
         }
 
@@ -100,28 +106,27 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(albume);
-                await _context.SaveChangesAsync();
+                _context.Agregar(albume);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
         // GET: Albumes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var albume = await _context.Albumes.FindAsync(id);
+            var albume = _context.DameUno(id);
             if (albume == null)
             {
                 return NotFound();
             }
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
@@ -141,8 +146,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(albume);
-                    await _context.SaveChangesAsync();
+                    _context.Modificar(id,albume);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -157,7 +161,7 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Id", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_Grupocontext.DameTodos(), "Id", "Id", albume.GruposId);
             return View(albume);
         }
 
@@ -169,9 +173,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = await _context.Albumes
-                .Include(a => a.Grupos)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var albume = _context.DameTodos().Join(_Grupocontext.DameTodos(), album => album.GruposId,
+                    grupo => grupo.Id, (album, grupo) => new { Album = album, Grupo = grupo }).Select(x => x)
+                .FirstOrDefault(x => x.Album.Id == id);
             if (albume == null)
             {
                 return NotFound();
@@ -185,19 +189,17 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var albume = await _context.Albumes.FindAsync(id);
+            var albume = _context.DameUno(id);
             if (albume != null)
             {
-                _context.Albumes.Remove(albume);
+                _context.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AlbumeExists(int id)
         {
-            return _context.Albumes.Any(e => e.Id == id);
+            return _context.DameTodos().Any(e => e.Id == id);
         }
     }
 }

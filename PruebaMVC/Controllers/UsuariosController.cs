@@ -7,14 +7,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IGenericRepositorio<Usuario> _context;
 
-        public UsuariosController(GrupoCContext context)
+        public UsuariosController(IGenericRepositorio<Usuario> context)
         {
             _context = context;
         }
@@ -24,12 +25,11 @@ namespace PruebaMVC.Controllers
         {
             ViewData["NombreSortParm"] = String.IsNullOrEmpty(sortOrder) ? "nombre_desc" : "";
             ViewData["EmailSortParm"] = sortOrder == "Email" ? "email_desc" : "Email";
-            if (_context.Albumes == null)
+            if (_context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
-            var usuarios = from m in _context.Usuarios
-                         select m;
+            var usuarios = _context.DameTodos().Select(x => x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -50,19 +50,18 @@ namespace PruebaMVC.Controllers
                     usuarios = usuarios.OrderBy(s => s.Nombre);
                     break;
             }
-            return View(await usuarios.AsNoTracking().ToListAsync());
+            return View(usuarios);
         }
 
         // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = _context.DameUno(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -86,22 +85,21 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
+                _context.Agregar(usuario);
                 return RedirectToAction(nameof(Index));
             }
             return View(usuario);
         }
 
         // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = _context.DameUno(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -125,8 +123,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    _context.Modificar(id,usuario);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -145,15 +142,14 @@ namespace PruebaMVC.Controllers
         }
 
         // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = _context.DameUno(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -167,19 +163,17 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = _context.DameUno(id);
             if (usuario != null)
             {
-                _context.Usuarios.Remove(usuario);
+                _context.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UsuarioExists(int id)
         {
-            return _context.Usuarios.Any(e => e.Id == id);
+            return _context.DameTodos().Any(e => e.Id == id);
         }
     }
 }
