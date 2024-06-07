@@ -16,11 +16,26 @@ namespace PruebaMVC.Controllers
     {
         private readonly IGenericRepositorio<Albume> _context;
         private readonly IGenericRepositorio<Grupo> _contextGrupo;
+        private readonly IEnumerable<VistaAlbume> _conjunto;
+
 
         public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<Grupo> contextGrupo)
         {
             _context = context;
             _contextGrupo = contextGrupo;
+            _conjunto = _context.DameTodos().Select(x => x)
+                           .Join(_contextGrupo.DameTodos().Select(x => x),
+                           album => album.Id,
+                           grupo => grupo.Id,
+                           (album, grupo) => new VistaAlbume
+                           {
+                               Id = album.Id,
+                               Titulo = album.Titulo,
+                               Fecha = album.Fecha,
+                               Genero = album.Genero,
+                               NombreGrupo = grupo.Nombre,
+                               GruposId = grupo.Id,
+                           });
         }
 
         // GET: Albumes
@@ -33,20 +48,7 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-
-            var grupos = _contextGrupo.DameTodos().Select(x => x);
-            var albums = _context.DameTodos().Select(x => x);
-            var conjunto = albums
-                           .Join(grupos,
-                           album => album.Id,
-                           grupo => grupo.Id,
-                           (album, grupo) => new VistaAlbume { 
-                               Id = album.Id,
-                               Titulo = album.Titulo,
-                               Fecha= album.Fecha, 
-                               Genero=album.Genero,
-                               NombreGrupo =grupo.Nombre, 
-                               GruposId=grupo.Id, });
+            var conjunto = _conjunto;
             if (!String.IsNullOrEmpty(searchString))
             {
                 conjunto = conjunto.Where(s => s.Titulo!.Contains(searchString));
@@ -72,27 +74,13 @@ namespace PruebaMVC.Controllers
                     conjunto = conjunto.OrderBy(s => s.Titulo);
                     break;
             }
+
             return View(conjunto);
         }
 
         public async Task<IActionResult> IndexConsulta()
-        {
-
-            var grupos = _contextGrupo.DameTodos().Select(x => x);
-            var albums = _context.DameTodos().Select(x => x);
-            var conjunto = albums
-                           .Join(grupos,
-                           album => album.Id,
-                           grupo => grupo.Id,
-                           (album, grupo) => new VistaAlbume
-                           {
-                               Id = album.Id,
-                               Titulo = album.Titulo,
-                               Fecha = album.Fecha,
-                               Genero = album.Genero,
-                               NombreGrupo = grupo.Nombre,
-                               GruposId = grupo.Id,
-                           }).Select(x => x).
+        { 
+            var conjunto = _conjunto.Select(x => x).
                            Where(x => x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
             return View(conjunto);
         }
@@ -104,21 +92,7 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            var grupos = _contextGrupo.DameTodos().Select(x => x);
-            var albums = _context.DameTodos().Select(x => x);
-            var conjunto = albums
-                           .Join(grupos,
-                           album => album.Id,
-                           grupo => grupo.Id,
-                           (album, grupo) => new VistaAlbume
-                           {
-                               Id = album.Id,
-                               Titulo = album.Titulo,
-                               Fecha = album.Fecha,
-                               Genero = album.Genero,
-                               NombreGrupo = grupo.Nombre,
-                               GruposId = grupo.Id,
-                           });
+            var conjunto = _conjunto;
             var albume = conjunto.FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
@@ -147,8 +121,9 @@ namespace PruebaMVC.Controllers
                 _context.Agregar(albume);
                 return RedirectToAction(nameof(Index));
             }
+            var conjunto = _conjunto;
             ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
-            return View(albume);
+            return View(conjunto);
         }
 
         // GET: Albumes/Edit/5
@@ -164,8 +139,9 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
+            var conjunto = _conjunto;
             ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
-            return View(albume);
+            return View(conjunto);
         }
 
         // POST: Albumes/Edit/5
@@ -199,8 +175,9 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            var conjunto = _conjunto;
             ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Id", albume.GruposId);
-            return View(albume);
+            return View(conjunto);
         }
 
         // GET: Albumes/Delete/5
@@ -211,7 +188,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _context.DameTodos().FirstOrDefault(x => x.Id == id);
+            var albume = _conjunto.FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
                 return NotFound();
