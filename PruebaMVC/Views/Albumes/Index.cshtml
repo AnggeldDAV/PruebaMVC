@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PruebaMVC.Models.Albume>
+﻿@model IEnumerable<PruebaMVC.Models.VistaAlbume>
 
 @{
     ViewData["Title"] = "Index";
@@ -27,7 +27,7 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["TituloSortParm"]">@Html.DisplayNameFor(model => model.Titulo)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["IDSortParm"]">@Html.DisplayNameFor(model => model.Grupos)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["IDSortParm"]">@Html.DisplayNameFor(model => model.NombreGrupo)</a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["GeneroSortParm"]">@Html.DisplayNameFor(model => model.Genero)</a>
@@ -46,7 +46,7 @@
                     @Html.DisplayFor(modelItem => item.Titulo)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Grupos.Nombre)
+                    @Html.DisplayFor(modelItem => item.NombreGrupo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Genero)
