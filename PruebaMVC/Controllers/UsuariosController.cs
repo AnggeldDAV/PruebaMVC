@@ -25,7 +25,7 @@ namespace PruebaMVC.Controllers
         {
             ViewData["NombreSortParm"] = String.IsNullOrEmpty(sortOrder) ? "nombre_desc" : "";
             ViewData["EmailSortParm"] = sortOrder == "Email" ? "email_desc" : "Email";
-            if (_context.DameTodos() == null)
+            if (await _context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
@@ -164,10 +164,10 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = _context.DameUno(id);
+            var usuario =await _context.DameUno(id);
             if (usuario != null)
             {
-                _context.Borrar(id);
+               await _context.Borrar(id);
             }
             return RedirectToAction(nameof(Index));
         }

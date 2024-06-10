@@ -32,7 +32,7 @@ namespace PruebaMVC.Controllers
             ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
             ViewData["IDSortParm"] = sortOrder == "Grupos" ? "grupos_desc" : "Grupos";
-            if (_context.DameTodos() == null)
+            if (await _context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
@@ -196,10 +196,10 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var albume = _context.DameUno(id);
+            var albume = await _context.DameUno(id);
             if (albume != null)
             {
-                _context.Borrar(id);
+               await _context.Borrar(id);
             }
             return RedirectToAction(nameof(Index));
         }
