@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class ArtistasController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IGenericRepositorio<Artista> _context;
 
-        public ArtistasController(GrupoCContext context)
+
+        public ArtistasController(IGenericRepositorio<Artista> context)
         {
             _context = context;
         }
@@ -24,11 +26,13 @@ namespace PruebaMVC.Controllers
         {
             ViewData["NombreSortParm"] = String.IsNullOrEmpty(sortOrder) ? "nombre_desc" : "";
             ViewData["GeneroSortParm"] = sortOrder == "Genero" ? "genero_desc" : "Genero";
-            if (_context.Albumes == null)
+            if (await _context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
-            var artistas = from m in _context.Artistas
+
+            var vista = await _context.DameTodos();
+            var artistas = from m in vista
                            select m;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -50,13 +54,14 @@ namespace PruebaMVC.Controllers
                     artistas = artistas.OrderBy(s => s.Nombre);
                     break;
             }
-            return View(await artistas.AsNoTracking().ToListAsync());
+            return View(artistas);
         }
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.Artistas.Where(x => x.FechaNac.Value.Year >1950);
-            return View(await consulta.AsNoTracking().ToListAsync());
+            var vista = await _context.DameTodos();
+            var consulta = vista.Where(x => x.FechaNac.Value.Year >1950);
+            return View(consulta);
         }
 
         // GET: Artistas/Details/5
@@ -67,8 +72,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var artista = await _context.Artistas
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _context.DameTodos();
+            var artista = vista
+                .FirstOrDefault(m => m.Id == id);
             if (artista == null)
             {
                 return NotFound();
@@ -78,9 +84,8 @@ namespace PruebaMVC.Controllers
         }
 
         // GET: Artistas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero");
             return View();
         }
 
@@ -93,28 +98,25 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(artista);
-                await _context.SaveChangesAsync();
+                await _context.Agregar(artista);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", artista.Genero);
             return View(artista);
         }
 
         // GET: Artistas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var artista = await _context.Artistas.FindAsync(id);
+            var artista = await _context.DameUno(id);
             if (artista == null)
             {
                 return NotFound();
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", artista.Genero);
             return View(artista);
         }
 
@@ -134,12 +136,11 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(artista);
-                    await _context.SaveChangesAsync();
+                    _context.Modificar(id,artista);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArtistaExists(artista.Id))
+                    if (!ArtistaExists(artista.Id).Result)
                     {
                         return NotFound();
                     }
@@ -150,7 +151,6 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Genero"] = new SelectList(_context.Albumes, "Id", "Genero", artista.Genero);
             return View(artista);
         }
 
@@ -161,9 +161,9 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-
-            var artista = await _context.Artistas
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _context.DameTodos();
+            var artista = vista
+                .FirstOrDefault(m => m.Id == id);
             if (artista == null)
             {
                 return NotFound();
@@ -177,19 +177,18 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var artista = await _context.Artistas.FindAsync(id);
+            var artista = await _context.DameUno(id);
             if (artista != null)
             {
-                _context.Artistas.Remove(artista);
+                _context.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArtistaExists(int id)
+        private async Task<bool> ArtistaExists(int id)
         {
-            return _context.Artistas.Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }
