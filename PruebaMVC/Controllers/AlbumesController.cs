@@ -105,7 +105,7 @@ namespace PruebaMVC.Controllers
         // GET: Albumes/Create
         public IActionResult Create()
         {
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre");
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo");
             return View();
         }
 
@@ -122,8 +122,8 @@ namespace PruebaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var conjunto = _conjunto;
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
-            return View(conjunto);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
+            return View(albume);
         }
 
         // GET: Albumes/Edit/5
@@ -139,8 +139,8 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            var conjunto = _conjunto;
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
+            var conjunto = _conjunto.FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
             return View(conjunto);
         }
 
@@ -175,8 +175,8 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            var conjunto = _conjunto;
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Id", albume.GruposId);
+            var conjunto = _conjunto.FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
             return View(conjunto);
         }
 
