@@ -6,23 +6,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class ListasController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IGenericRepositorio<Lista> _context;
+        private readonly IGenericRepositorio<Usuario> _contextUsuario;
+        private readonly IGenericRepositorio<VistaListum> _contextVista;
 
-        public ListasController(GrupoCContext context)
+        public ListasController(IGenericRepositorio<Lista> context, IGenericRepositorio<Usuario> contextUsuario, IGenericRepositorio<VistaListum> contextVista)
         {
             _context = context;
+            _contextUsuario = contextUsuario;
+            _contextVista = contextVista;
         }
 
         // GET: Listas
         public async Task<IActionResult> Index()
         {
-            var grupoCContext = _context.Listas.Include(l => l.Usuario);
-            return View(await grupoCContext.ToListAsync());
+            var grupoCContext = await _contextVista.DameTodos();
+            return View(grupoCContext);
         }
 
         // GET: Listas/Details/5
@@ -32,10 +37,8 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-
-            var lista = await _context.Listas
-                .Include(l => l.Usuario)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _contextVista.DameTodos();
+            var lista = vista.FirstOrDefault(m => m.Id == id);
             if (lista == null)
             {
                 return NotFound();
@@ -45,9 +48,9 @@ namespace PruebaMVC.Controllers
         }
 
         // GET: Listas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id");
+            ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Nombre");
             return View();
         }
 
@@ -60,28 +63,27 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(lista);
-                await _context.SaveChangesAsync();
+                await _context.Agregar(lista);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", lista.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Id", lista.UsuarioId);
             return View(lista);
         }
 
         // GET: Listas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var lista = await _context.Listas.FindAsync(id);
+            var lista = await _context.DameUno(id);
             if (lista == null)
             {
                 return NotFound();
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", lista.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Nombre", lista.UsuarioId);
             return View(lista);
         }
 
@@ -101,12 +103,12 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(lista);
-                    await _context.SaveChangesAsync();
+                    _context.Modificar(id,lista);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ListaExists(lista.Id))
+                    if (!ListaExists(lista.Id).Result)
                     {
                         return NotFound();
                     }
@@ -117,7 +119,7 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", lista.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Id", lista.UsuarioId);
             return View(lista);
         }
 
@@ -128,10 +130,9 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-
-            var lista = await _context.Listas
-                .Include(l => l.Usuario)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _contextVista.DameTodos();
+            var lista = vista
+                .FirstOrDefault(m => m.Id == id);
             if (lista == null)
             {
                 return NotFound();
@@ -145,19 +146,18 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var lista = await _context.Listas.FindAsync(id);
+            var lista = await _context.DameUno(id);
             if (lista != null)
             {
-                _context.Listas.Remove(lista);
+                await _context.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ListaExists(int id)
+        private async Task<bool> ListaExists(int id)
         {
-            return _context.Listas.Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }
