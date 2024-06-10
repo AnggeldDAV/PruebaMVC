@@ -32,7 +32,8 @@ namespace PruebaMVC.Controllers
                 return Problem("Es nulo");
             }
 
-            var conciertos = _context.DameTodos().Select(x=>x);
+            var vista = await _context.DameTodos();
+            var conciertos = vista.Select(x=>x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -70,7 +71,8 @@ namespace PruebaMVC.Controllers
 
         public async Task<IActionResult> IndexConsulta()
         {
-            var consulta = _context.DameTodos().Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
+            var vista = await _context.DameTodos();
+            var consulta = vista.Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
             return View(consulta);
         }
 
@@ -82,7 +84,8 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var context = _context.DameTodos().Select(x=>x);
+            var vista = await _context.DameTodos();
+            var context = vista.Select(x=>x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -108,7 +111,7 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Agregar(concierto);
+                await _context.Agregar(concierto);
                 return RedirectToAction(nameof(Index));
             }
             return View(concierto);
@@ -122,7 +125,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var concierto = _context.DameUno((int)id);
+            var concierto = await _context.DameUno((int)id);
             if (concierto == null)
             {
                 return NotFound();
@@ -146,11 +149,11 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,concierto);
+                   _context.Modificar(id,concierto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ConciertoExists(concierto.Id))
+                    if (!ConciertoExists(concierto.Id).Result)
                     {
                         return NotFound();
                     }
@@ -171,8 +174,8 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-
-            var context = _context.DameTodos().Select(x => x);
+            var vista = await _context.DameTodos();
+            var context = vista.Select(x => x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -191,14 +194,15 @@ namespace PruebaMVC.Controllers
             var concierto = _context.DameUno((int)id);
             if (concierto != null)
             {
-                _context.Borrar(id);
+                await _context.Borrar(id);
             }
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ConciertoExists(int id)
+        private async Task<bool> ConciertoExists(int id)
         {
-            return _context.DameTodos().Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }

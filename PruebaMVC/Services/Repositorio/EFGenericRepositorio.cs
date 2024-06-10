@@ -6,38 +6,39 @@ namespace PruebaMVC.Services.Repositorio
 {
     public class EFGenericRepositorio<T> : IGenericRepositorio<T> where T : class
     {
-        public readonly GrupoCContext _context = new();
-        public List<T> DameTodos()
+        private readonly GrupoCContext _context = new();
+        public async Task<List<T>> DameTodos()
         {
-            return _context.Set<T>().AsNoTracking().ToList();
+            return await _context.Set<T>().ToListAsync();
         }
 
-        public T DameUno(int Id)
+        public async Task<T> DameUno(int Id)
         {
-            return _context.Set<T>().Find(Id);
+            return await _context.Set<T>().FindAsync(Id);
         }
 
-        public bool Borrar(int Id)
-        {
-            _context.Set<T>().Remove(DameUno((int)Id));
-            _context.SaveChanges();
+        public async Task<bool> Borrar(int Id)
+        { 
+            var elemento = await DameUno(Id);
+            _context.Set<T>().Remove(elemento);
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public bool Agregar(T element)
+        public async Task<bool> Agregar(T element)
         {
-            _context.Set<T>().Add(element);
-            _context.SaveChanges();
+            await _context.Set<T>().AddAsync(element);
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public void Modificar(int Id, T element)
+        public async void Modificar(int Id, T element)
         {
             _context.Entry(element).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<T> Filtra(Expression<Func<T, bool>> predicado)
+        public async Task<List<T>> Filtra(Expression<Func<T, bool>> predicado)
         {
             return _context.Set<T>().Where<T>(predicado).ToList();
         }

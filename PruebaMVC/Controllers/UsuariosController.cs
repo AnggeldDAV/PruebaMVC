@@ -29,7 +29,8 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-            var usuarios = _context.DameTodos().Select(x => x);
+            var vista = await _context.DameTodos();
+            var usuarios = vista.Select(x => x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -67,7 +68,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            return View(usuario);
+            return View(await usuario);
         }
 
         // GET: Usuarios/Create
@@ -85,7 +86,7 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Agregar(usuario);
+                await _context.Agregar(usuario);
                 return RedirectToAction(nameof(Index));
             }
             return View(usuario);
@@ -99,7 +100,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var usuario = _context.DameUno(id);
+            var usuario = await _context.DameUno(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -123,11 +124,11 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,usuario);
+                   _context.Modificar(id,usuario);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.Id))
+                    if (!UsuarioExists(usuario.Id).Result)
                     {
                         return NotFound();
                     }
@@ -149,7 +150,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var usuario = _context.DameUno(id);
+            var usuario =await _context.DameUno(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -171,9 +172,10 @@ namespace PruebaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UsuarioExists(int id)
+        private async Task<bool> UsuarioExists(int id)
         {
-            return _context.DameTodos().Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }

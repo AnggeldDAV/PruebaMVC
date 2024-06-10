@@ -36,7 +36,8 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-            var conjunto = _contextVista.DameTodos().Select(x=>x);
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.Select(x => x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 conjunto = conjunto.Where(s => s.Titulo!.Contains(searchString));
@@ -67,8 +68,9 @@ namespace PruebaMVC.Controllers
         }
 
         public async Task<IActionResult> IndexConsulta()
-        { 
-            var conjunto = _contextVista.DameTodos().Select(x => x).
+        {
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.Select(x => x).
                            Where(x => x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
             return View(conjunto);
         }
@@ -80,7 +82,7 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            var conjunto = _contextVista.DameTodos();
+            var conjunto = await _contextVista.DameTodos();
             var albume = conjunto.FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
@@ -91,9 +93,9 @@ namespace PruebaMVC.Controllers
         }
 
         // GET: Albumes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre");
+            ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre");
             return View();
         }
 
@@ -109,7 +111,7 @@ namespace PruebaMVC.Controllers
                 _context.Agregar(albume);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
@@ -121,13 +123,15 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _context.DameUno(id);
+            var albume = await _context.DameUno(id);
             if (albume == null)
             {
                 return NotFound();
             }
-            var conjunto = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
+
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(conjunto);
         }
 
@@ -151,7 +155,7 @@ namespace PruebaMVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AlbumeExists(albume.Id))
+                    if (!AlbumeExists(albume.Id).Result)
                     {
                         return NotFound();
                     }
@@ -162,8 +166,10 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            var conjunto = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
+
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(conjunto);
         }
 
@@ -175,7 +181,8 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
+            var vista = await _contextVista.DameTodos();
+            var albume =vista.FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
                 return NotFound();
@@ -197,9 +204,10 @@ namespace PruebaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AlbumeExists(int id)
+        private async Task<bool> AlbumeExists(int id)
         {
-            return _context.DameTodos().Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }
