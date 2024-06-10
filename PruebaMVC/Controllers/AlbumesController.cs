@@ -16,26 +16,14 @@ namespace PruebaMVC.Controllers
     {
         private readonly IGenericRepositorio<Albume> _context;
         private readonly IGenericRepositorio<Grupo> _contextGrupo;
-        private readonly IEnumerable<VistaAlbume> _conjunto;
+        private readonly IGenericRepositorio<VistaAlbume> _contextVista;
 
 
-        public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<Grupo> contextGrupo)
+        public AlbumesController(IGenericRepositorio<Albume> context, IGenericRepositorio<Grupo> contextGrupo, IGenericRepositorio<VistaAlbume> contextVista)
         {
             _context = context;
             _contextGrupo = contextGrupo;
-            _conjunto = _context.DameTodos().Select(x => x)
-                           .Join(_contextGrupo.DameTodos().Select(x => x),
-                           album => album.Id,
-                           grupo => grupo.Id,
-                           (album, grupo) => new VistaAlbume
-                           {
-                               Id = album.Id,
-                               Titulo = album.Titulo,
-                               Fecha = album.Fecha,
-                               Genero = album.Genero,
-                               NombreGrupo = grupo.Nombre,
-                               GruposId = grupo.Id,
-                           });
+            _contextVista = contextVista;
         }
 
         // GET: Albumes
@@ -48,7 +36,7 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-            var conjunto = _conjunto;
+            var conjunto = _contextVista.DameTodos().Select(x=>x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 conjunto = conjunto.Where(s => s.Titulo!.Contains(searchString));
@@ -80,7 +68,7 @@ namespace PruebaMVC.Controllers
 
         public async Task<IActionResult> IndexConsulta()
         { 
-            var conjunto = _conjunto.Select(x => x).
+            var conjunto = _contextVista.DameTodos().Select(x => x).
                            Where(x => x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
             return View(conjunto);
         }
@@ -92,7 +80,7 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            var conjunto = _conjunto;
+            var conjunto = _contextVista.DameTodos();
             var albume = conjunto.FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
@@ -105,7 +93,7 @@ namespace PruebaMVC.Controllers
         // GET: Albumes/Create
         public IActionResult Create()
         {
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo");
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre");
             return View();
         }
 
@@ -121,8 +109,7 @@ namespace PruebaMVC.Controllers
                 _context.Agregar(albume);
                 return RedirectToAction(nameof(Index));
             }
-            var conjunto = _conjunto;
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(albume);
         }
 
@@ -139,8 +126,8 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            var conjunto = _conjunto.FirstOrDefault(x => x.Id == id);
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
+            var conjunto = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(conjunto);
         }
 
@@ -175,8 +162,8 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            var conjunto = _conjunto.FirstOrDefault(x => x.Id == id);
-            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "NombreGrupo", albume.GruposId);
+            var conjunto = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
+            ViewData["GruposId"] = new SelectList(_contextGrupo.DameTodos(), "Id", "Nombre", albume.GruposId);
             return View(conjunto);
         }
 
@@ -188,7 +175,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var albume = _conjunto.FirstOrDefault(x => x.Id == id);
+            var albume = _contextVista.DameTodos().FirstOrDefault(x => x.Id == id);
             if (albume == null)
             {
                 return NotFound();
