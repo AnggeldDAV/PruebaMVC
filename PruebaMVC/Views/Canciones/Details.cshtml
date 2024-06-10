@@ -1,4 +1,4 @@
-﻿@model PruebaMVC.Models.Cancione
+﻿@model PruebaMVC.Models.VistaCancione
 
 @{
     ViewData["Title"] = "Details";
@@ -29,10 +29,10 @@
             @Html.DisplayFor(model => model.Fecha)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Albumes)
+            @Html.DisplayNameFor(model => model.TituloAlbum)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Albumes.Id)
+            @Html.DisplayFor(model => model.TituloAlbum)
         </dd>
     </dl>
 </div>
