@@ -7,14 +7,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PruebaMVC.Models;
+using PruebaMVC.Services.Repositorio;
 
 namespace PruebaMVC.Controllers
 {
     public class GrupoesController : Controller
     {
-        private readonly GrupoCContext _context;
+        private readonly IGenericRepositorio<Grupo> _context;
 
-        public GrupoesController(GrupoCContext context)
+        public GrupoesController(IGenericRepositorio<Grupo> context)
         {
             _context = context;
         }
@@ -23,13 +24,12 @@ namespace PruebaMVC.Controllers
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["NombreSortParm"] = String.IsNullOrEmpty(sortOrder) ? "nombre_desc" : "";
-            if (_context.Albumes == null)
+            if (await _context.DameTodos() == null)
             {
                 return Problem("Es nulo");
             }
-            var grupos = from m in _context.Grupos
-                         select m;
-
+            var vista = await _context.DameTodos();
+            var grupos = vista.Select(x=>x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 grupos = grupos.Where(s => s.Nombre!.Contains(searchString));
@@ -43,7 +43,7 @@ namespace PruebaMVC.Controllers
                     grupos = grupos.OrderBy(s => s.Nombre);
                     break;
             }
-            return View(await grupos.AsNoTracking().ToListAsync());
+            return View(grupos);
         }
 
         // GET: Grupoes/Details/5
@@ -54,8 +54,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var grupo = await _context.Grupos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _context.DameTodos();
+            var grupo = vista
+                .FirstOrDefault(m => m.Id == id);
             if (grupo == null)
             {
                 return NotFound();
@@ -79,22 +80,21 @@ namespace PruebaMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(grupo);
-                await _context.SaveChangesAsync();
+                await _context.Agregar(grupo);
                 return RedirectToAction(nameof(Index));
             }
             return View(grupo);
         }
 
         // GET: Grupoes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var grupo = await _context.Grupos.FindAsync(id);
+            var grupo = await _context.DameUno(id);
             if (grupo == null)
             {
                 return NotFound();
@@ -118,12 +118,11 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Update(grupo);
-                    await _context.SaveChangesAsync();
+                    _context.Modificar(id,grupo);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GrupoExists(grupo.Id))
+                    if (!GrupoExists(grupo.Id).Result)
                     {
                         return NotFound();
                     }
@@ -145,8 +144,9 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
 
-            var grupo = await _context.Grupos
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vista = await _context.DameTodos();
+            var grupo = vista
+                .FirstOrDefault(m => m.Id == id);
             if (grupo == null)
             {
                 return NotFound();
@@ -160,19 +160,18 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var grupo = await _context.Grupos.FindAsync(id);
+            var grupo = await _context.DameUno(id);
             if (grupo != null)
             {
-                _context.Grupos.Remove(grupo);
+                await _context.Borrar(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool GrupoExists(int id)
+        private async Task<bool> GrupoExists(int id)
         {
-            return _context.Grupos.Any(e => e.Id == id);
+            var vista = await _context.DameTodos();
+            return vista.Any(e => e.Id == id);
         }
     }
 }
