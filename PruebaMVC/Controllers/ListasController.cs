@@ -83,8 +83,10 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.FirstOrDefault(x => x.Id == id);
             ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Nombre", lista.UsuarioId);
-            return View(lista);
+            return View(conjunto);
         }
 
         // POST: Listas/Edit/5
