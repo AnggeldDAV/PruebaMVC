@@ -19,7 +19,7 @@ namespace PruebaMVC.Models
 
         [Display(Name = "Album")]
         public int? AlbumesId { get; set; }
-
+        public string? UrlVideo { get; set; }
 
         public virtual Albume? Albumes { get; set; }
 

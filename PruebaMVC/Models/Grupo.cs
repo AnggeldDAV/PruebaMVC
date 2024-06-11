@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace PruebaMVC.Models;
 
 public partial class Grupo
 {
     public int Id { get; set; }
+
     public string? Nombre { get; set; }
 
     public virtual ICollection<Albume> Albumes { get; set; } = new List<Albume>();

@@ -94,9 +94,12 @@ namespace PruebaMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Genero,FechaNac")] Artista artista)
+        public async Task<IActionResult> Create([Bind("Id,Nombre,Genero,FechaNac,Foto")] Artista artista)
         {
-            if (ModelState.IsValid)
+            //IFormFile file = Request.Files["ImageData"];
+            //ContentRepository service = new ContentRepository();
+            //int i = service.UploadImageInDataBase(file, artista);
+                if (ModelState.IsValid)
             {
                 await _context.Agregar(artista);
                 return RedirectToAction(nameof(Index));

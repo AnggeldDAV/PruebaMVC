@@ -36,6 +36,7 @@ public partial class GrupoCContext : DbContext
     public virtual DbSet<ListasCancione> ListasCanciones { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+
     public virtual DbSet<VistaAlbume> VistaAlbumes { get; set; }
 
     public virtual DbSet<VistaCancionConcierto> VistaCancionConciertos { get; set; }
@@ -72,6 +73,7 @@ public partial class GrupoCContext : DbContext
 
         modelBuilder.Entity<Artista>(entity =>
         {
+            entity.Property(e => e.Foto).HasColumnType("image");
             entity.Property(e => e.Genero)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -88,6 +90,9 @@ public partial class GrupoCContext : DbContext
             entity.Property(e => e.Titulo)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.UrlVideo)
+                .HasMaxLength(255)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Albumes).WithMany(p => p.Canciones)
                 .HasForeignKey(d => d.AlbumesId)
@@ -96,8 +101,6 @@ public partial class GrupoCContext : DbContext
 
         modelBuilder.Entity<CancionesConcierto>(entity =>
         {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
             entity.HasOne(d => d.Canciones).WithMany(p => p.CancionesConciertos)
                 .HasForeignKey(d => d.CancionesId)
                 .HasConstraintName("FK_CancionesConciertos_Canciones");
@@ -124,8 +127,6 @@ public partial class GrupoCContext : DbContext
 
         modelBuilder.Entity<ConciertosGrupo>(entity =>
         {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
             entity.HasOne(d => d.Conciertos).WithMany(p => p.ConciertosGrupos)
                 .HasForeignKey(d => d.ConciertosId)
                 .HasConstraintName("FK_ConciertosGrupos_Conciertos");
@@ -187,6 +188,7 @@ public partial class GrupoCContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });
+
         modelBuilder.Entity<VistaAlbume>(entity =>
         {
             entity
