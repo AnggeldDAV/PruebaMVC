@@ -1,4 +1,5 @@
-﻿@model IEnumerable<PruebaMVC.Models.Grupo>
+﻿@using PruebaMVC.Services.Speficification
+@model IEnumerable<PruebaMVC.Models.Grupo>
 
 @{
     ViewData["Title"] = "Index";
@@ -34,7 +35,7 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Nombre)
-                @await Component.InvokeAsync("Grupos", item.Id)
+                    @await Component.InvokeAsync("Grupos", new ArtistaAutentification(item.Id))
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -7,10 +7,9 @@ namespace PruebaMVC.Views.Shared.Components
 {
     public class GruposViewComponent(IGenericRepositorio<VistaGruposArtista> coleccion) : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(int ArtistaId)
+        public async Task<IViewComponentResult> InvokeAsync(IArtistaSpecification especificacion)
         {
             var items = await coleccion.DameTodos();
-            IArtistaSpecification especificacion = new ArtistaAutentification(ArtistaId);
             var itemsFiltrados = items.Where(especificacion.IsValid);
             return View(itemsFiltrados);
         }
