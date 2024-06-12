@@ -24,4 +24,6 @@ public partial class VistaListaCancione
     public int IdListas { get; set; }
 
     public int IdCanciones { get; set; }
+
+    public string? UrlVideo { get; set; }
 }
