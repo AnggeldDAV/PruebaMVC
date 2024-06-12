@@ -34,6 +34,7 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Nombre)
+                @await Component.InvokeAsync("Grupos", item.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

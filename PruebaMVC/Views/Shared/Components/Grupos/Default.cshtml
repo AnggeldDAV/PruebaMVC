@@ -1,0 +1,24 @@
+﻿@model IEnumerable<VistaGruposArtista>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreArtista)
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreArtista)
+                </td>
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
