@@ -3,10 +3,16 @@
 @foreach (var item in Model)
 {
     <div class="card" style="width: 15rem;">
-        @if (item.Foto != null)
-        {
-            <img class="card-img-top" src="data:image;base64,@Convert.ToBase64String(item.Foto)" alt="Foto" />
-        }
+            @{
+                if (item.Foto != null)
+                {
+                    <img class="card-img-top" src="data:image;base64,@Convert.ToBase64String(item.Foto)" alt="Foto" />
+                }
+                else
+                {
+                    <img class="card-img-top" src="~/img/sin_foto.png" alt="Sin Foto" />
+                }
+            }
         <div class="card-body">
             <h5 class="card-title">@Html.DisplayFor(modelItem => item.NombreArtista)</h5>
             <p class="card-text">@Html.DisplayFor(modelItem => item.FechaNac)</p>
