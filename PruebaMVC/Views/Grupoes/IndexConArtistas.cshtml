@@ -25,7 +25,7 @@
     <thead>
     <tr>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["NombreSortParm"]">@Html.DisplayNameFor(model => model.Nombre)</a>
+            <a asp-action="IndexConArtistas" asp-route-sortOrder="@ViewData["NombreSortParm"]">@Html.DisplayNameFor(model => model.Nombre)</a>
         </th>
         <th></th>
     </tr>
@@ -34,7 +34,7 @@
     @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
+                    <h2>@Html.DisplayFor(modelItem => item.Nombre)</h2>
                 @await Component.InvokeAsync("Grupos", new GrupoAutentificacion(item.Id))
             </td>
             <td>
