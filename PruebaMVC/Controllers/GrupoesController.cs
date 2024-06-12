@@ -46,8 +46,36 @@ namespace PruebaMVC.Controllers
             return View(grupos);
         }
 
+        public async Task<IActionResult> IndexConArtistas(string sortOrder, string searchString)
+        {
+            ViewData["NombreSortParm"] = String.IsNullOrEmpty(sortOrder) ? "nombre_desc" : "";
+            if (await _context.DameTodos() == null)
+            {
+                return Problem("Es nulo");
+            }
+
+            var vista = await _context.DameTodos();
+            var grupos = vista.Select(x => x);
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                grupos = grupos.Where(s => s.Nombre!.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nombre_desc":
+                    grupos = grupos.OrderByDescending(s => s.Nombre);
+                    break;
+                default:
+                    grupos = grupos.OrderBy(s => s.Nombre);
+                    break;
+            }
+
+            return View(grupos);
+        }
+
         // GET: Grupoes/Details/5
-        public async Task<IActionResult> Details(int? id)
+            public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
