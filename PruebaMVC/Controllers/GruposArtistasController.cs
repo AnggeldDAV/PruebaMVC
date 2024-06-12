@@ -66,8 +66,8 @@ namespace PruebaMVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Id", gruposArtista.ArtistasId);
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Id", gruposArtista.GruposId);
+            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Nombre", gruposArtista.ArtistasId);
+            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", gruposArtista.GruposId);
             return View(gruposArtista);
         }
 
@@ -84,8 +84,8 @@ namespace PruebaMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Id", gruposArtista.ArtistasId);
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Id", gruposArtista.GruposId);
+            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Nombre", gruposArtista.ArtistasId);
+            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", gruposArtista.GruposId);
             return View(gruposArtista);
         }
 
@@ -121,8 +121,8 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Id", gruposArtista.ArtistasId);
-            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Id", gruposArtista.GruposId);
+            ViewData["ArtistasId"] = new SelectList(_context.Artistas, "Id", "Nombre", gruposArtista.ArtistasId);
+            ViewData["GruposId"] = new SelectList(_context.Grupos, "Id", "Nombre", gruposArtista.GruposId);
             return View(gruposArtista);
         }
 
