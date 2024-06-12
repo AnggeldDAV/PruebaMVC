@@ -279,6 +279,7 @@ public partial class GrupoCContext : DbContext
                 .HasNoKey()
                 .ToView("VistaGruposArtistas");
 
+            entity.Property(e => e.Foto).HasColumnType("image");
             entity.Property(e => e.Genero)
                 .HasMaxLength(50)
                 .IsUnicode(false);

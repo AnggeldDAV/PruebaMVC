@@ -22,4 +22,6 @@ public partial class VistaGruposArtista
     public int IdGrupo { get; set; }
 
     public int IdArtista { get; set; }
+
+    public byte[]? Foto { get; set; }
 }
