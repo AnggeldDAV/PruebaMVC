@@ -26,13 +26,6 @@
                 <input asp-for="FechaNac" class="form-control" />
                 <span asp-validation-for="FechaNac" class="text-danger"></span>
             </div>
-@*             <div class="form-group">
-                <label asp-for="Foto" class="control-label"></label>
-                @using (Html.BeginForm("Create", "Artistas", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                {
-                    <input asp-for="Foto" type="file" name="ImageData" id="ImageData" onchange="fileCheck(this);"/>
-                }
-            </div> *@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

@@ -96,10 +96,7 @@ namespace PruebaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nombre,Genero,FechaNac,Foto")] Artista artista)
         {
-            //IFormFile file = Request.Files["ImageData"];
-            //ContentRepository service = new ContentRepository();
-            //int i = service.UploadImageInDataBase(file, artista);
-                if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 await _context.Agregar(artista);
                 return RedirectToAction(nameof(Index));
