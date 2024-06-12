@@ -32,7 +32,7 @@ namespace PruebaMVC.Services.Repositorio
             return true;
         }
 
-        public async void Modificar(int Id, T element)
+        public async Task Modificar(int Id, T element)
         {
             _context.Entry(element).State = EntityState.Modified;
             await _context.SaveChangesAsync();

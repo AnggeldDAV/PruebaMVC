@@ -94,10 +94,18 @@ namespace PruebaMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Genero,FechaNac,Foto")] Artista artista)
+        public async Task<IActionResult> Create([Bind("Id,Nombre,Genero,FechaNac")] Artista artista, IFormFile foto)
         {
             if (ModelState.IsValid)
             {
+                if (foto != null && foto.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await foto.CopyToAsync(memoryStream);
+                        artista.Foto = memoryStream.ToArray();
+                    }
+                }
                 await _context.Agregar(artista);
                 return RedirectToAction(nameof(Index));
             }
@@ -125,7 +133,7 @@ namespace PruebaMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Genero,FechaNac")] Artista artista)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Genero,FechaNac")] Artista artista, IFormFile foto)
         {
             if (id != artista.Id)
             {
@@ -136,7 +144,20 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,artista);
+                    var artistaToUpdate = await _context.DameUno(id);
+                    if (foto != null && foto.Length > 0)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await foto.CopyToAsync(memoryStream);
+                            artistaToUpdate.Foto = memoryStream.ToArray();
+                        }
+                    }
+
+                    artistaToUpdate.Nombre = artista.Nombre;
+                    artistaToUpdate.Genero = artista.Genero;
+                    artistaToUpdate.FechaNac = artista.FechaNac;
+                    await _context.Modificar(id, artistaToUpdate);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -180,7 +201,7 @@ namespace PruebaMVC.Controllers
             var artista = await _context.DameUno(id);
             if (artista != null)
             {
-                _context.Borrar(id);
+               await _context.Borrar(id);
             }
             return RedirectToAction(nameof(Index));
         }
