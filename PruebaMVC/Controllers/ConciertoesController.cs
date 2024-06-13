@@ -33,7 +33,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var conciertos = vista.Select(x=>x);
+            var conciertos = vista.AsParallel().Select(x=>x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -72,7 +72,7 @@ namespace PruebaMVC.Controllers
         public async Task<IActionResult> IndexConsulta()
         {
             var vista = await _context.DameTodos();
-            var consulta = vista.Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
+            var consulta = vista.AsParallel().Where(x=> x.Fecha.Value.Year >2015 && x.Precio >30);
             return View(consulta);
         }
 
@@ -85,7 +85,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var context = vista.Select(x=>x);
+            var context = vista.AsParallel().Select(x=>x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -149,7 +149,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                   _context.Modificar(id,concierto);
+                   await _context.Modificar(id,concierto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,7 +175,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _context.DameTodos();
-            var context = vista.Select(x => x);
+            var context = vista.AsParallel().Select(x => x);
             var concierto = context
                 .FirstOrDefault(m => m.Id == id);
             if (concierto == null)
@@ -202,7 +202,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> ConciertoExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

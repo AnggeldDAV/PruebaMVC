@@ -35,8 +35,8 @@ namespace PruebaMVC.Controllers
             {
                 return Problem("Es nulo");
             }
-            var canciones = from m in grupoCContext
-                           select m;
+            var canciones = from m in grupoCContext.AsParallel()
+                            select m;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -76,7 +76,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _contextVista.DameTodos();
-            var cancione = vista
+            var cancione = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (cancione == null)
             {
@@ -117,7 +117,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var conjunto = await _contextVista.DameTodos();
-            var cancione = conjunto.FirstOrDefault(x => x.Id == id);
+            var cancione = conjunto.AsParallel().FirstOrDefault(x => x.Id == id);
             if (cancione == null)
             {
                 return NotFound();
@@ -142,7 +142,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,cancione);
+                   await _context.Modificar(id,cancione);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -158,7 +158,7 @@ namespace PruebaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var vista = await _contextVista.DameTodos();
-            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            var conjunto = vista.AsParallel().FirstOrDefault(x => x.Id == id);
             ViewData["AlbumesId"] = new SelectList(await _contextAlbume.DameTodos(), "Id", "Id", cancione.AlbumesId);
             return View(conjunto);
         }
@@ -171,7 +171,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _contextVista.DameTodos();
-            var cancione = vista.FirstOrDefault(m => m.Id == id);
+            var cancione = vista.AsParallel().FirstOrDefault(m => m.Id == id);
             if (cancione == null)
             {
                 return NotFound();
@@ -196,7 +196,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> CancioneExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

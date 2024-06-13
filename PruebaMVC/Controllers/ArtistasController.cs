@@ -32,7 +32,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var artistas = from m in vista
+            var artistas = from m in vista.AsParallel()
                            select m;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -60,7 +60,7 @@ namespace PruebaMVC.Controllers
         public async Task<IActionResult> IndexConsulta()
         {
             var vista = await _context.DameTodos();
-            var consulta = vista.Where(x => x.FechaNac.Value.Year >1950);
+            var consulta = vista.AsParallel().Where(x => x.FechaNac.Value.Year >1950);
             return View(consulta);
         }
 
@@ -73,7 +73,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var artista = vista
+            var artista = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (artista == null)
             {
@@ -183,7 +183,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _context.DameTodos();
-            var artista = vista
+            var artista = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (artista == null)
             {
@@ -209,7 +209,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> ArtistaExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

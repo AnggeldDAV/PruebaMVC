@@ -29,7 +29,7 @@ namespace PruebaMVC.Controllers
                 return Problem("Es nulo");
             }
             var vista = await _context.DameTodos();
-            var grupos = vista.Select(x=>x);
+            var grupos = vista.AsParallel().Select(x=>x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 grupos = grupos.Where(s => s.Nombre!.Contains(searchString));
@@ -55,7 +55,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var grupos = vista.Select(x => x);
+            var grupos = vista.AsParallel().Select(x => x);
             if (!String.IsNullOrEmpty(searchString))
             {
                 grupos = grupos.Where(s => s.Nombre!.Contains(searchString));
@@ -83,7 +83,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var grupo = vista
+            var grupo = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (grupo == null)
             {
@@ -146,7 +146,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,grupo);
+                   await _context.Modificar(id,grupo);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -173,7 +173,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _context.DameTodos();
-            var grupo = vista
+            var grupo = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (grupo == null)
             {
@@ -199,7 +199,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> GrupoExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

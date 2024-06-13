@@ -38,7 +38,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _contextVista.DameTodos();
-            var lista = vista.FirstOrDefault(m => m.Id == id);
+            var lista = vista.AsParallel().FirstOrDefault(m => m.Id == id);
             if (lista == null)
             {
                 return NotFound();
@@ -84,7 +84,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _contextVista.DameTodos();
-            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            var conjunto = vista.AsParallel().FirstOrDefault(x => x.Id == id);
             ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Nombre", lista.UsuarioId);
             return View(conjunto);
         }
@@ -105,7 +105,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,lista);
+                    await _context.Modificar(id,lista);
 
                 }
                 catch (DbUpdateConcurrencyException)
@@ -121,8 +121,10 @@ namespace PruebaMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            var vista = await _contextVista.DameTodos();
+            var conjunto = vista.AsParallel().FirstOrDefault(x => x.Id == id);
             ViewData["UsuarioId"] = new SelectList(await _contextUsuario.DameTodos(), "Id", "Id", lista.UsuarioId);
-            return View(lista);
+            return View(conjunto);
         }
 
         // GET: Listas/Delete/5
@@ -133,7 +135,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _contextVista.DameTodos();
-            var lista = vista
+            var lista = vista.AsParallel()
                 .FirstOrDefault(m => m.Id == id);
             if (lista == null)
             {
@@ -159,7 +161,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> ListaExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

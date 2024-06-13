@@ -30,7 +30,7 @@ namespace PruebaMVC.Controllers
                 return Problem("Es nulo");
             }
             var vista = await _context.DameTodos();
-            var usuarios = vista.Select(x => x);
+            var usuarios = vista.AsParallel().Select(x => x);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -124,7 +124,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                   _context.Modificar(id,usuario);
+                  await _context.Modificar(id,usuario);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,7 +175,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> UsuarioExists(int id)
         {
             var vista = await _context.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }

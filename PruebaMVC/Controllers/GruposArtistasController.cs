@@ -43,7 +43,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _contextVista.DameTodos();
-            var gruposArtista =vista.FirstOrDefault(m => m.Id == id);
+            var gruposArtista =vista.AsParallel().FirstOrDefault(m => m.Id == id);
             if (gruposArtista == null)
             {
                 return NotFound();
@@ -91,7 +91,7 @@ namespace PruebaMVC.Controllers
                 return NotFound();
             }
             var vista = await _contextVista.DameTodos();
-            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            var conjunto = vista.AsParallel().FirstOrDefault(x => x.Id == id);
             ViewData["ArtistasId"] = new SelectList(await _contextArtista.DameTodos(), "Id", "Nombre", gruposArtista.ArtistasId);
             ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre", gruposArtista.GruposId);
             return View(conjunto);
@@ -113,7 +113,7 @@ namespace PruebaMVC.Controllers
             {
                 try
                 {
-                    _context.Modificar(id,gruposArtista);
+                   await _context.Modificar(id,gruposArtista);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -129,7 +129,7 @@ namespace PruebaMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var vista = await _contextVista.DameTodos();
-            var conjunto = vista.FirstOrDefault(x => x.Id == id);
+            var conjunto = vista.AsParallel().FirstOrDefault(x => x.Id == id);
             ViewData["ArtistasId"] = new SelectList(await _contextArtista.DameTodos(), "Id", "Nombre", gruposArtista.ArtistasId);
             ViewData["GruposId"] = new SelectList(await _contextGrupo.DameTodos(), "Id", "Nombre", gruposArtista.GruposId);
             return View(conjunto);
@@ -144,7 +144,7 @@ namespace PruebaMVC.Controllers
             }
 
             var vista = await _contextVista.DameTodos();
-            var gruposArtista = vista.FirstOrDefault(m => m.Id == id);
+            var gruposArtista = vista.AsParallel().FirstOrDefault(m => m.Id == id);
             if (gruposArtista == null)
             {
                 return NotFound();
@@ -169,7 +169,7 @@ namespace PruebaMVC.Controllers
         private async Task<bool> GruposArtistaExists(int id)
         {
             var vista =await _contextArtista.DameTodos();
-            return vista.Any(e => e.Id == id);
+            return vista.AsParallel().Any(e => e.Id == id);
         }
     }
 }
