@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PruebaMVC.Models.ListasCancione>
+﻿@model IEnumerable<PruebaMVC.Models.VistaListaCancione>
 
 @{
     ViewData["Title"] = "Index";
@@ -10,10 +10,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Canciones)
+                @Html.DisplayNameFor(model => model.Titulo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Listas)
+                @Html.DisplayNameFor(model => model.Nombre)
             </th>
             <th></th>
         </tr>
@@ -22,10 +22,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Canciones.Id)
+                @Html.DisplayFor(modelItem => item.Titulo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Listas.Id)
+                @Html.DisplayFor(modelItem => item.Nombre)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
