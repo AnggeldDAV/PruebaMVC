@@ -1,4 +1,4 @@
-﻿@model PruebaMVC.Models.CancionesConcierto
+﻿@model PruebaMVC.Models.VistaCancionConcierto
 
 @{
     ViewData["Title"] = "Details";
@@ -11,16 +11,16 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Canciones)
+            @Html.DisplayNameFor(model => model.TituloCanciones)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Canciones.Id)
+            @Html.DisplayFor(model => model.TituloCanciones)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Conciertos)
+            @Html.DisplayNameFor(model => model.Titulo)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Conciertos.Id)
+            @Html.DisplayFor(model => model.Titulo)
         </dd>
     </dl>
 </div>

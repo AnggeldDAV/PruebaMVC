@@ -229,6 +229,9 @@ public partial class GrupoCContext : DbContext
             entity.Property(e => e.TituloCanciones)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.UrlVideo)
+                .HasMaxLength(255)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<VistaCancione>(entity =>

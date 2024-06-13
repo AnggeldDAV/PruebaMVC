@@ -25,11 +25,13 @@ public partial class VistaCancionConcierto
 
     public decimal? Precio { get; set; }
 
-    public int Expr3 { get; set; }
+    public int IdConciertos { get; set; }
 
     public int? AlbumesId { get; set; }
 
     public DateTime? FechaConcierto { get; set; }
 
     public int IdCanciones { get; set; }
+
+    public string? UrlVideo { get; set; }
 }
