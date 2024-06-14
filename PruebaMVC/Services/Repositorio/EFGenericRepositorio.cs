@@ -12,7 +12,7 @@ namespace PruebaMVC.Services.Repositorio
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T> DameUno(int Id)
+        public async Task<T?> DameUno(int Id)
         {
             return await _context.Set<T>().FindAsync(Id);
         }
@@ -20,9 +20,11 @@ namespace PruebaMVC.Services.Repositorio
         public async Task<bool> Borrar(int Id)
         { 
             var elemento = await DameUno(Id);
+            if (elemento == null) return false;
             _context.Set<T>().Remove(elemento);
             await _context.SaveChangesAsync();
             return true;
+
         }
 
         public async Task<bool> Agregar(T element)
@@ -40,7 +42,7 @@ namespace PruebaMVC.Services.Repositorio
 
         public async Task<List<T>> Filtra(Expression<Func<T, bool>> predicado)
         {
-            return _context.Set<T>().Where<T>(predicado).ToList();
+            return await _context.Set<T>().Where<T>(predicado).ToListAsync();
         }
     }
 }
