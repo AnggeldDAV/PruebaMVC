@@ -16,6 +16,7 @@ namespace PruebaMVC.Models
         [Display(Name = "Fecha de Nacimiento")]
         [DataType(DataType.Date)]
         public DateOnly? FechaNac { get; set; }
+        [Required(ErrorMessage = "Introduzca una foto")]
         public byte[]? Foto { get; set; }
         public virtual ICollection<GruposArtista> GruposArtista { get; set; } = new List<GruposArtista>();
     }
