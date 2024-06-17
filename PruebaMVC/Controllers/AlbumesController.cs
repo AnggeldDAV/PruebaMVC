@@ -71,7 +71,7 @@ namespace PruebaMVC.Controllers
         {
             var vista = await _contextVista.DameTodos();
             var conjunto = vista.AsParallel().Select(x => x).
-                           Where(x => x.Genero == "Heavy Metal" && x.Titulo.Contains("u"));
+                           Where(x => x.Genero == "Heavy Metal"  && x.Titulo != null && x.Titulo.Contains('u'));
             return View(conjunto);
         }
 
